@@ -1,4 +1,4 @@
-pragma solidity ^0.4.17;
+pragma solidity ^0.4.23;
 
 import "ds-test/test.sol";
 
@@ -9,7 +9,7 @@ contract TokenReceivingEchoDemo {
 
     NENT nent;
 
-    function TokenReceivingEchoDemo(address _token)
+    constructor(address _token) public
     {
         nent = NENT(_token);
     }
@@ -105,4 +105,3 @@ contract ERC223ReceivingContractTest is DSTest, TokenController {
         assertTrue(nent.balanceOf(this) == 10000);
     }
 }
-

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.17;
+pragma solidity ^0.4.23;
 
  /*
  * Contract that is working with ERC223 tokens
@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
  */
 
 /// @title ERC223ReceivingContract - Standard contract implementation for compatibility with ERC223 tokens.
-contract ERC223ReceivingContract {
+interface ERC223ReceivingContract {
 
     /// @dev Function that is called when a user or another contract wants to transfer funds.
     /// @param _from Transaction initiator, analogue of msg.sender

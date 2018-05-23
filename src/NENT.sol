@@ -1,4 +1,4 @@
-pragma solidity ^0.4.17;
+pragma solidity ^0.4.23;
 
 import "ds-token/token.sol";
 import './ERC223ReceivingContract.sol';
@@ -9,7 +9,7 @@ import './ERC223.sol';
 
 contract NENT is DSToken("NENT"), ERC223, Controlled {
 
-    function NENT() {
+    constructor() public {
         setName("NENT Token");
     }
 
@@ -37,7 +37,7 @@ contract NENT is DSToken("NENT"), ERC223, Controlled {
                 // revert();
                 // bytes memory empty;
 
-                ReceivingContractTokenFallbackFailed(_from, _to, _amount);
+                emit ReceivingContractTokenFallbackFailed(_from, _to, _amount);
 
                 // Even the fallback failed if there is such one, the transfer will not be revert since "revert()" is not called.
             }
@@ -65,7 +65,7 @@ contract NENT is DSToken("NENT"), ERC223, Controlled {
             receiver.tokenFallback(_from, _amount, _data);
         }
 
-        ERC223Transfer(_from, _to, _amount, _data);
+        emit ERC223Transfer(_from, _to, _amount, _data);
 
         return true;
     }
@@ -112,12 +112,12 @@ contract NENT is DSToken("NENT"), ERC223, Controlled {
     function mint(address _guy, uint _wad) auth stoppable {
         super.mint(_guy, _wad);
 
-        Transfer(0, _guy, _wad);
+        emit Transfer(0, _guy, _wad);
     }
     function burn(address _guy, uint _wad) auth stoppable {
         super.burn(_guy, _wad);
 
-        Transfer(_guy, 0, _wad);
+        emit Transfer(_guy, 0, _wad);
     }
 
     /// @notice `msg.sender` approves `_spender` to send `_amount` tokens on
@@ -175,14 +175,15 @@ contract NENT is DSToken("NENT"), ERC223, Controlled {
     ///  set to 0 in case you want to extract ether.
     function claimTokens(address _token) onlyController {
         if (_token == 0x0) {
-            controller.transfer(this.balance);
+            controller.transfer(address(this).balance);
             return;
         }
 
         ERC20 token = ERC20(_token);
         uint balance = token.balanceOf(this);
         token.transfer(controller, balance);
-        ClaimedTokens(_token, controller, balance);
+
+        emit ClaimedTokens(_token, controller, balance);
     }
 
 ////////////////
