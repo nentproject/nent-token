@@ -51,7 +51,7 @@ contract MigrateMiner is DSAuth{
             addressMapping[_qtumAddress] = _dest;
             mintRequests[_dest] = Request(_dest, _amount, _qtumAddress, _qtumSig, msg.sender, false);
 
-            emit MintRequest(_qtumAddress, _qtumSig, _dest, _amount);
+            emit MintRequest(_qtumAddress, _qtumSig, _dest, _amount, msg.sender);
         } else {
             require(_amount > 0);
             require(mintRequests[_dest].amount > 0);
@@ -73,7 +73,7 @@ contract MigrateMiner is DSAuth{
 
             nent.transfer(_dest, _amount);
 
-            emit ConfirmRequest(_qtumAddress, _qtumSig, _dest, _amount);
+            emit ConfirmRequest(_qtumAddress, _qtumSig, _dest, _amount, msg.sender);
         }
     }
 
@@ -94,9 +94,9 @@ contract MigrateMiner is DSAuth{
         emit ClaimedTokens(_token, owner, balance);
     }
 
-    event MintRequest(bytes32 indexed qtumAddress, string qtumSig, address dest, uint256 amount);
+    event MintRequest(bytes32 indexed qtumAddress, string qtumSig, address dest, uint256 amount, address worker);
 
-    event ConfirmRequest(bytes32 indexed qtumAddress, string qtumSig, address dest, uint256 amount);
+    event ConfirmRequest(bytes32 indexed qtumAddress, string qtumSig, address dest, uint256 amount, address worker);
 
     event ClaimedTokens(address indexed _token, address indexed _owner, uint _amount);
 }
