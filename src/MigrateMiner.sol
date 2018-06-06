@@ -61,7 +61,27 @@ contract MigrateMiner is DSAuth{
         emit ConfirmRequest(_dest, _amount);
     }
 
+
+    /// @notice This method can be used by the owner to extract mistakenly
+    ///  sent tokens to this contract.
+    /// @param _token The address of the token contract that you want to recover
+    ///  set to 0 in case you want to extract ether.
+    function claimTokens(address _token) auth {
+        if (_token == 0x0) {
+            owner.transfer(address(this).balance);
+            return;
+        }
+
+        ERC20 token = ERC20(_token);
+        uint balance = token.balanceOf(this);
+        token.transfer(owner, balance);
+
+        emit ClaimedTokens(_token, owner, balance);
+    }
+
     event MintRequest(bytes32 indexed qtumAddress, string qtumSig, address dest, uint256 amount);
 
     event ConfirmRequest(address indexed dest, uint256 amount);
+
+    event ClaimedTokens(address indexed _token, address indexed _owner, uint _amount);
 }
