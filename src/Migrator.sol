@@ -2,7 +2,7 @@ pragma solidity ^0.4.23;
 
 import "./NENT.sol";
 
-contract MigrateMiner is DSAuth{
+contract Migrator is DSAuth{
     struct Request {
         address addr;
         uint amount;
@@ -75,6 +75,24 @@ contract MigrateMiner is DSAuth{
 
             emit ConfirmRequest(_qtumAddress, _qtumSig, _dest, _amount, msg.sender);
         }
+    }
+
+    // 量子链地址去除首字母Q之后为33个字符，无法转换为byte32，因此还需要去掉一个首字母
+    // 例如 "QT3Mae6FMDb3eRHrbEZPAv9JL55vrg3a9s" -->  byte32("2Mae6FMDb3eRHrbEZPAv9JL55vrg3a9s")
+    function getProofByQtumAddress(bytes32 _qtumAddress) public view returns (address _ethAddress, uint256 _amount, address _currentWorker, string _qtumSig, bool _confirmed)
+    {
+        address ethAddress = addressMapping[_qtumAddress];
+        Request memory r = mintRequests[ethAddress];
+
+        return (ethAddress, r.amount, r.worker, r.qtumSig, r.confirmed);
+    }
+
+    // The _qtumAddress in return value is bytes32 of substring(2:) of original Qtum address string
+    function getProofByEthereumAddress(address _ethAddress) public view returns (bytes32 _qtumAddress, uint256 _amount, address _currentWorker, string _qtumSig, bool _confirmed)
+    {
+        Request memory r = mintRequests[_ethAddress];
+
+        return (r.qtumAddress, r.amount, r.worker, r.qtumSig, r.confirmed);
     }
 
     /// @notice This method can be used by the owner to extract mistakenly
